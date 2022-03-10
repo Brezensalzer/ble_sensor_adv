@@ -177,8 +177,10 @@ void loop()
 {
   // losing 2.8 µA
   delay(30000);
-  // now we lose 274 µA :(
   startAdvertising();
   delay(500);
   stopAdvertising();
+  //--- brute force ----------------
+  // otherwise we lose 274 µA
+  NVIC_SystemReset();
 }
