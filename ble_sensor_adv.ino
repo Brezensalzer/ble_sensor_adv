@@ -36,8 +36,7 @@ float batteryVoltage()
   // 4095 = 3.6V, 2.7V cut off voltage for LiFePO4 batteries
   float value = adcValue * 0.87890625;
   #ifdef DEBUG
-    Serial.print(adcValue);
-    Serial.print(" Battery: ");
+    Serial.print("Battery: ");
     Serial.println(value);
   #endif
   return value;  
@@ -53,7 +52,7 @@ void sensorData()
   #ifdef DEBUG
     Serial.println("setting pin VCC_I2C to HIGH");
   #endif
-  delay(100);
+  delay(100); // sensor boot time
 
   // Initialize sensor --------------------------
   Wire.begin();
@@ -156,7 +155,7 @@ void setup()
       delay(100);   // for nrf52840 with native usb
     }
     Serial.println("ItsyBitsy nRF52840 Environmental Sensor");
-    Serial.println("---------------------------------------\n");
+    Serial.println("---------------------------------------");
   #endif
   #ifndef DEBUG
     Serial.end();   // power saving
@@ -180,11 +179,11 @@ void loop()
 //---------------------------------------------------------------------------
 {
   // losing 2.8 µA
-  delay(30000);
+  delay(59000);
   startAdvertising();
   delay(500);
   stopAdvertising();
-  //--- brute force ----------------
+  //--- brute force soft reset ----------------
   // otherwise we lose 274 µA
   NVIC_SystemReset();
 }
