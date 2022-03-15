@@ -13,7 +13,7 @@ struct ATTR_PACKED
   uint16_t temperature;
   uint16_t humidity;
   uint16_t pressure;
-  uint8_t battery;
+  uint16_t battery;
 } sensor_data;
 
 //--- MS8607 temperature, humidity and pressure sensor ---
@@ -26,14 +26,18 @@ struct ATTR_PACKED
 const int adcPin = A5;
 
 //------------------------------------------------------------------------------
-uint8_t batteryLevel()
+float batteryVoltage()
 //------------------------------------------------------------------------------
 {
+  analogReference(AR_INTERNAL); // reference voltage 0..3.6V
+  analogReadResolution(12);     // analog resolution 12bit
   int adcValue = analogRead(adcPin);
-  // 1024 = 3.6V, 768 = 2.7V cut off voltage for LiFePO4 batteries
-  uint8_t value = map(adcValue, 768, 1024, 0, 100);
+  adcValue = analogRead(adcPin);
+  // 4095 = 3.6V, 2.7V cut off voltage for LiFePO4 batteries
+  float value = adcValue * 0.87890625;
   #ifdef DEBUG
-    Serial.print("Akku: ");
+    Serial.print(adcValue);
+    Serial.print(" Battery: ");
     Serial.println(value);
   #endif
   return value;  
@@ -88,7 +92,7 @@ void sensorData()
   sensor_data.temperature = int(temp.temperature * 100.0);
   sensor_data.humidity = int(humidity.relative_humidity * 100.0);
   sensor_data.pressure = int(pressure.pressure * 10.0); 
-  sensor_data.battery = batteryLevel();
+  sensor_data.battery = int(batteryVoltage());
 
   Bluefruit.Advertising.addData(BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA, &sensor_data, sizeof(sensor_data));
 
